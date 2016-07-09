@@ -11,6 +11,7 @@ def init_drawman():
     yc = 0
     t.goto(xc,yc)
     t.speed(100)
+    t.hideturtle()
     drawman_color(default_color)
     drawman_scale(default_scale)
     drawman_width(default_width)
