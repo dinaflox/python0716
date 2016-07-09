@@ -1,5 +1,4 @@
 from turtle import Turtle
-from time import sleep
 
 def init_drawmen():
     global t,xc,yc
@@ -27,13 +26,5 @@ def on_vector(dx,dy):
     yc += dy
     t.goto(xc,yc)
 
-def test_drawmen():
-    pen_down()
-    for i in range(5):
-        on_vector(10,20)
-        on_vector(0,-20)
-    pen_up()
-
 init_drawmen()
-test_drawmen()
-sleep(3)
+
