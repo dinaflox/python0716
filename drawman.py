@@ -1,9 +1,10 @@
 from turtle import Turtle
 default_scale = 10
 default_color = 'black'
+default_width = 1
 
 def init_drawman():
-    global t,xc,yc,_drawman_scale
+    global t,xc,yc
     t = Turtle()
     t.penup()
     xc = 0
@@ -12,11 +13,16 @@ def init_drawman():
     t.speed(100)
     drawman_color(default_color)
     drawman_scale(default_scale)
+    drawman_width(default_width)
 
 def drawman_width(width):
+    global _drawman_width
+    _drawman_width = width
     t.width(width)
 
 def drawman_color(color):
+    global _drawman_color
+    _drawman_color = color
     t.color(color)
 
 def drawman_scale(scale):
@@ -42,6 +48,8 @@ init_drawman()
 
 def draw_grid():
     xy = 500 // _drawman_scale
+    dw = _drawman_width
+    dc = _drawman_color
     drawman_width(1)
     for x in range(-xy,xy+1):
         if x != 0:
@@ -62,5 +70,7 @@ def draw_grid():
         pen_down()
         on_vector(2*xy,0)
     pen_up()
+    drawman_width(dw)
+    drawman_color(dc)
 
 
