@@ -1,10 +1,14 @@
 from drawman import*
 from time import sleep
+from math import sin
 
 def f(x):
-    return x*x
+    return sin(x)
 
-drawman_scale(10)
+drawman_scale(50)
+draw_grid()
+drawman_color('red')
+drawman_width(3)
 x = -5
 to_point(x, f(x))
 pen_down()
