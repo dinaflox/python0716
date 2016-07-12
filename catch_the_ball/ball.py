@@ -28,11 +28,11 @@ def init_main_window():
     button2.pack()
 
     variable = tkinter.IntVar(0)
-    label = tkinter.Label(root, textvarible=variable)
+    label = tkinter.Label(root, textvariable=variable)
     label.pack()
     scale = tkinter.Scale(root, orient=tkinter.HORIZONTAL)
     scale.pack()
-    text = tkinter.Entry(root, textvarible=variable)
+    text = tkinter.Entry(root, textvariable=variable)
     text.pack()
 
 if __name__ == "__main__":
