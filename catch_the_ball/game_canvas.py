@@ -6,10 +6,16 @@ ball_max_radius = 40
 ball_avaiable_color = ['green','blue','red','yellow','#FF00FF']
 
 def click_ball(event):
+    global label
     obj = canvas.find_closest(event.x, event.y)
-    x1, y1, x2, y2 = canvas.coords(obj)
-    if x1 <= event.x <= x2 and y1 <=event.y <= y2:
-        canvas.delete(obj)
+    try:
+        x1, y1, x2, y2 = canvas.coords(obj)
+        if x1 <= event.x <= x2 and y1 <=event.y <= y2:
+            label['text']=obj # это номер!
+            print(obj)
+            canvas.delete(obj)
+    except ValueError: print('All')
+
 
 def move_all_balls(event):
     for obj in canvas.find_all():
@@ -32,7 +38,7 @@ def init_ball_catch_game():
 
 
 def init_main_window():
-    global root, canvas
+    global root, canvas, label
     root = tkinter.Tk()
     root.title('Balls')
     root.geometry('600x400')
@@ -40,6 +46,9 @@ def init_main_window():
     canvas.bind('<Button>', click_ball)
     root.bind('<Motion>', move_all_balls)
     canvas.pack(side=tkinter.LEFT)
+    label = tkinter.Label(root, text='')
+    #label['text'] = '6'
+    label.pack(side=tkinter.RIGHT)
 
 
 if __name__ == "__main__":
