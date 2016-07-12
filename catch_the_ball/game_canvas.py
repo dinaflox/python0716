@@ -1,23 +1,48 @@
 import tkinter
+from random import choice, randint
+ball_inition_namber = 10
+ball_min_radius = 15
+ball_max_radius = 40
+ball_avaiable_color = ['green','blue','red','yellow','#FF00FF']
 
-def paint(event):
-    """обработчик события для холста"""
-    print(event.x, event.y)
-    if event.widget != canvas:
-        print('странно...')
-        return
-    canvas.coords(line, 0, 0, event.x, event.y)
+def click_ball(event):
+    obj = canvas.find_closest(event.x, event.y)
+    x1, y1, x2, y2 = canvas.coords(obj)
+    if x1 <= event.x <= x2 and y1 <=event.y <= y2:
+        canvas.delete(obj)
 
-root = tkinter.Tk()
+def move_all_balls(event):
+    for obj in canvas.find_all():
+        dx = [randint(-1, 1)]
+        dy = [randint(-1, 1)]
+        canvas.move(obj, dx, dy)
 
-canvas = tkinter.Canvas(root, background="white", width=400, height=400)
+def create_random_ball():
+    R = randint(ball_min_radius, ball_max_radius)
+    x = randint(0,int(canvas['width'])-2*R-1)
+    y = randint(0,int(canvas['height'])-2*R-1)
+    canvas.create_oval(x,y, x+2*R, y+2*R, fill=random_color())
 
-canvas.bind('<Motion>', paint)
-canvas.pack()
+def random_color():
+    return choice(ball_avaiable_color)
 
-line = canvas.create_line(0,0,10,10)
-for i in range(10):
-    oval = canvas.create_oval(2+i*40, 2+i*40, i*40+30, i*40+30, fill="green", width=2)
+def init_ball_catch_game():
+    for i in range(ball_inition_namber):
+        create_random_ball()
 
-root.mainloop()
-print('Alles')
+
+
+def init_main_window():
+    global root, canvas
+    root = tkinter.Tk()
+    canvas = tkinter.Canvas(root, background="white", width=400, height=400)
+    canvas.bind('<Button>', click_ball)
+    canvas.bind('<Motion>', move_all_balls)
+    canvas.pack()
+
+
+
+if __name__ == "__main__":
+    init_main_window()
+    init_ball_catch_game()
+    root.mainloop()
