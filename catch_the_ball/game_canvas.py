@@ -1,57 +1,40 @@
 import tkinter
-from random import choice, randint
-ball_inition_number = 10
-ball_min_radius = 15
-ball_max_radius = 40
-ball_avaiable_color = ['green','blue','red','yellow','#FF00FF']
-
-def click_ball(event):
-    global label
-    obj = canvas.find_closest(event.x, event.y)
-    try:
-        x1, y1, x2, y2 = canvas.coords(obj)
-        if x1 <= event.x <= x2 and y1 <=event.y <= y2:
-            label['text']=obj # это номер!
-            print(obj)
-            canvas.delete(obj)
-    except ValueError: print('All')
 
 
-def move_all_balls(event):
-    for obj in canvas.find_all():
-        dx = [randint(-1, 1)]
-        dy = [randint(-1, 1)]
-        canvas.move(obj, dx, dy)
+def print_b1():
+    button1['text'] = 'djn'
 
-def create_random_ball():
-    R = randint(ball_min_radius, ball_max_radius)
-    x = randint(1,int(canvas['width'])-2*R-1)
-    y = randint(1,int(canvas['height'])-2*R-1)
-    canvas.create_oval(x,y, x+2*R, y+2*R, fill=random_color())
 
-def random_color():
-    return choice(ball_avaiable_color)
-
-def init_ball_catch_game():
-    for i in range(ball_inition_number):
-        create_random_ball()
+def print_hello(event):
+    print(dir(event))
+    me = event.widget
+    if me == button1:
+        print('Hello!')
+    elif me == button2:
+        print('You pressed button2')
+    else:
+        raise ValueError()
 
 
 def init_main_window():
-    global root, canvas, label
+    global root, button1,button2,label,text,scale
     root = tkinter.Tk()
-    root.title('Balls')
-    root.geometry('600x400')
-    canvas = tkinter.Canvas(root, background="white", width=400, height=400)
-    canvas.bind('<Button>', click_ball)
-    root.bind('<Motion>', move_all_balls)
-    canvas.pack(side=tkinter.LEFT)
-    label = tkinter.Label(root, text='')
-    #label['text'] = '6'
-    label.pack(side=tkinter.RIGHT)
 
+    button1 = tkinter.Button(root, text="Button 1", command=print_b1, width=10)
+    button1.bind("<Button>", print_hello)
+    button1.pack()
+    button2 = tkinter.Button(root, text="Button 2")
+    button2.bind("<Button>", print_hello)
+    button2.pack()
+
+    variable = tkinter.IntVar(0)
+    label = tkinter.Label(root, textvariable=variable)
+    label.pack()
+    scale = tkinter.Scale(root, orient=tkinter.HORIZONTAL)
+    scale.pack()
+    text = tkinter.Entry(root, textvariable=variable)
+    text.pack()
 
 if __name__ == "__main__":
     init_main_window()
-    init_ball_catch_game()
     root.mainloop()
