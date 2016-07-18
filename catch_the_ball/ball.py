@@ -24,7 +24,8 @@ def click_ball(event):
             canvas.delete(obj)
             ball_click_count += 1
             if ball_click_count == ball_inition_number:
-                label['text']='GAME OVER! (точность ' +str((ball_click_count * 10000 // click_count) / 100) + '%, время: ' + str(round(time() - t)) + 'c.)'
+                label['text']='GAME OVER! (точность ' +str((ball_click_count * 10000 // click_count) / 100) + \
+                              '%, время: ' + str(round(time() - t)) + 'c.)'
                 Game = False
         if Game: label['text']='Всего выстрелов:' + str(click_count) + '. Попаданий: ' + str(ball_click_count)
     else: exit()
