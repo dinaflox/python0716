@@ -15,6 +15,7 @@ wg = 500
 hg = 500
 
 def click_ball(event):
+    """функция обработки события клика мышкой"""
     global label, Game, ball_click_count, click_count
     if Game:
         obj = canvas.find_closest(event.x, event.y)
@@ -31,6 +32,7 @@ def click_ball(event):
     else: exit()
 
 def move_all_balls(event):
+    """функция движения объектов канвы"""
     for obj in canvas.find_all():
         canvas.move(obj, DX[obj-1], DY[obj-1])
         x1, y1, x2, y2 = canvas.coords(obj)
@@ -40,6 +42,8 @@ def move_all_balls(event):
             DY[obj-1] =- DY[obj-1]
 
 def create_random_ball():
+    """функция создания объектов (шариков)
+    вместе со списками смещений каждого объекта"""
     R = randint(ball_min_radius, ball_max_radius)
     x = randint(10,int(canvas['width'])-2*R-10)
     y = randint(10,int(canvas['height'])-2*R-10)
@@ -60,6 +64,7 @@ def init_ball_catch_game():
         create_random_ball()
 
 def init_main_window():
+    """функция инициализации игрового поля"""
     global root, canvas, label
     root = tkinter.Tk()
     root.title('Balls')
