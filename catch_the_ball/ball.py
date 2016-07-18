@@ -11,6 +11,8 @@ ball_avaiable_color = ['green','blue','red','yellow','#FF00FF']
 DX = []
 DY = []
 Game = True
+wg = 500
+hg = 500
 
 def click_ball(event):
     global label, Game, ball_click_count, click_count
@@ -60,8 +62,8 @@ def init_main_window():
     global root, canvas, label
     root = tkinter.Tk()
     root.title('Balls')
-    root.geometry('400x420')
-    canvas = tkinter.Canvas(root, background="white", width=400, height=400)
+    root.geometry(str(wg)+'x'+str(hg+20))
+    canvas = tkinter.Canvas(root, background="white", width=wg, height=hg)
     canvas.bind('<Button>', click_ball)
     root.bind('<Motion>', move_all_balls)
     canvas.pack(side=tkinter.TOP)
