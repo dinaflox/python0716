@@ -1,6 +1,6 @@
 from tkinter import *
 from random import choice, randint
-from math import cos, sin, radians, atan, pi
+from math import cos, sin, atan, pi
 
 screen_width = 500
 screen_height = 400
@@ -12,11 +12,11 @@ class Ball:
     minimal_radius = 15
     maximal_radius = 40
 
-
     def __init__(self, b):
         """
-        Cоздаёт шарик в случайном месте игрового холста canvas,
-        при этом шарик не выходит за границы холста!
+        Cоздаёт шарик  в случайном месте игрового холста canvas,
+        при этом шарик не выходит за границы холста
+        ну или снаряд (при b == False)
         """
         if b:
             self._R = randint(Ball.minimal_radius, Ball.maximal_radius)
@@ -33,9 +33,9 @@ class Ball:
             self._y = 0
             self._color = 'black'
             self._R = 5
-            self._v = 2
-            self._Vx = self._v * cos(radians(45))
-            self._Vy = -self._v * sin(radians(45))
+            self._v = 5
+            self._Vx = self._v * cos(pi / 4)
+            self._Vy = -self._v * sin(pi / 4)
 
         self._avatar1 = canvas.create_oval(self._x, self._y,
                                           self._x + 2 * self._R, self._y + 2 * self._R,
@@ -46,12 +46,20 @@ class Ball:
                                          start = 90, extent = 90, style = ARC, outline = 'white')
 
 
-
     def fly(self, b):
-        if self._x + self._Vx < 0 or self._x + self._Vx + self._R * 2 > screen_width:
-            self._Vx = -self._Vx
-        if self._y + self._Vy < 0 or self._y + self._Vy + self._R * 2 > screen_height:
-            self._Vy = -self._Vy
+        if b:
+            if self._x + self._Vx < 0 or self._x + self._Vx + self._R * 2 > screen_width:
+                self._Vx = -self._Vx
+            if self._y + self._Vy < 0 or self._y + self._Vy + self._R * 2 > screen_height:
+                self._Vy = -self._Vy
+        else:
+            if self._x + self._Vx + self._R * 2 > screen_width or self._y + self._Vy < 0:
+                canvas.delete(self._avatar1)
+                shells_on_fly.remove(self)
+                return
+            """
+            а тут надо писать столкновения...
+            """
         self._x += self._Vx
         self._y += self._Vy
         canvas.coords(self._avatar1, self._x, self._y,
@@ -65,13 +73,16 @@ class Gun:
         self._x = 0
         self._y = screen_height
         self._l = 50
-        self._a = radians(45)
+        self._a = pi / 4
         self._lx = self._x + self._l * cos(self._a)
         self._ly = self._y - self._l * sin(self._a)
         self._avatar = canvas.create_line(self._x, self._y,
                                           self._lx, self._ly, width = 3)
 
     def shoot(self):
+        """
+        получаем снаряд, запускаем его и возращаем для запоминания в список снарядов
+        """
         shell = Ball(False)
         shell._x = self._lx - shell._R
         shell._y = self._ly - shell._R
@@ -79,6 +90,9 @@ class Gun:
         return shell
 
     def moves(self,dx,dy):
+        """
+        расчет координат рисования пушки
+        """
         if dx == 0:
             self._a = pi / 2
         else:
@@ -89,8 +103,10 @@ class Gun:
                                           self._lx, self._ly)
 
 def gun_move(event):
+    """
+    Движение пушки за мышкой
+    """
     gun.moves(event.x, screen_height - event.y)
-
 
 def init_game():
     """
@@ -103,6 +119,9 @@ def init_game():
     shells_on_fly = []
 
 def init_main_window():
+    """
+    инициализация экрана
+    """
     global root, canvas, scores_text, scores_value
     root = Tk()
     root.title("Пушка")
@@ -115,23 +134,23 @@ def init_main_window():
     canvas.bind('<Button-1>', click_event_handler)
     canvas.bind('<Motion>', gun_move)
 
-
 def timer_event():
-    # все периодические рассчёты, которые я хочу, делаю здесь
+    # таймер: гоняет шары и снаряды
     for ball in balls:
         ball.fly(True)
     for shell in shells_on_fly:
         shell.fly(False)
     canvas.after(timer_delay, timer_event)
 
-
 def click_event_handler(event):
+    """
+    добавляем по клику новый снаряд, рассчитываем, куда он полетит
+    """
     global shells_on_fly
     shell = gun.shoot()
     shell._Vx = shell._v * cos(gun._a)
     shell._Vy = -shell._v * sin(gun._a)
     shells_on_fly.append(shell)
-
 
 if __name__ == "__main__":
     init_main_window()
