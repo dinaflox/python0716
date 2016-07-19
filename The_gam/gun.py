@@ -1,77 +1,81 @@
 from tkinter import *
 from random import choice, randint
 
-screen_width = 400
-screen_height = 300
-timer_delay = 100
+screen_width = 500
+screen_height = 400
+timer_delay = 50
+available_colors = ['green', 'blue', 'red','#F0F']
 
 class Ball:
-    initial_number = 20
+    initial_number = 10
     minimal_radius = 15
     maximal_radius = 40
-    available_colors = ['green', 'blue', 'red']
 
-    def __init__(self):
+
+    def __init__(self, b):
         """
         Cоздаёт шарик в случайном месте игрового холста canvas,
         при этом шарик не выходит за границы холста!
         """
-        R = randint(Ball.minimal_radius, Ball.maximal_radius)
-        x = randint(0, screen_width-1-2*R)
-        y = randint(0, screen_height-1-2*R)
-        self._R = R
-        self._x = x
-        self._y = y
-        fillcolor = choice(Ball.available_colors)
-        self._avatar = canvas.create_oval(x, y, x+2*R, y+2*R,
-                                          width=1, fill=fillcolor,
-                                          outline=fillcolor)
-        self._Vx = randint(-2, +2)
-        self._Vy = randint(-2, +2)
+        if b:
+            self._R = randint(Ball.minimal_radius, Ball.maximal_radius)
+            self._x = randint(0, screen_width-1-2 * self._R)
+            self._y = randint(0, screen_height-1-2 * self._R)
+            self._color = choice(available_colors)
+            self._Vx = randint(-2, +2)
+            self._Vy = randint(-2, +2)
+            while self._Vx == 0 and self._Vy == 0:
+                self._Vx = randint(-2, +2)
+                self._Vy = randint(-2, +2)
+        else:
+            self._x = 0
+            self._y = 0
+            self._color = 'black'
+            self._R = 5
+            self._Vx = 2
+            self._Vy = -2
 
-    def fly(self):
+        self._avatar1 = canvas.create_oval(self._x, self._y,
+                                          self._x + 2 * self._R, self._y + 2 * self._R,
+                                          width=1, fill=self._color,
+                                          outline=self._color)
+        if b: self._avatar2 = canvas.create_arc(self._x + 5, self._y + 5,
+                                         self._x + 2 * self._R - 5, self._y + 2 * self._R - 5,
+                                         start = 90, extent = 90, style = ARC, outline = 'white')
+
+
+
+    def fly(self, b):
+        if self._x + self._Vx < 0 or self._x + self._Vx + self._R * 2 > screen_width:
+            self._Vx = -self._Vx
+        if self._y + self._Vy < 0 or self._y + self._Vy + self._R * 2 > screen_height:
+            self._Vy = -self._Vy
         self._x += self._Vx
         self._y += self._Vy
-        # отбивается от горизонтальных стенок
-        if self._x < 0:
-            self._x = 0
-            self._Vx = -self._Vx
-        elif self._x + 2*self._R >= screen_width:
-            self._x = screen_width - 2*self._R -1
-            self._Vx = -self._Vx
-        # отбивается от вертикальных стенок
-        if self._y < 0:
-            self._y = 0
-            self._Vy = -self._Vy
-        elif self._y + 2*self._R >= screen_height:
-            self._y = screen_height - 2*self._R  - 1
-            self._Vy = -self._Vy
-
-        canvas.coords(self._avatar, self._x, self._y,
+        canvas.coords(self._avatar1, self._x, self._y,
                       self._x + 2*self._R, self._y + 2*self._R)
+        if b:canvas.coords(self._avatar2, self._x + 5, self._y + 5,
+                                         self._x + 2 * self._R - 5, self._y + 2 * self._R - 5)
 
 
 class Gun:
     def __init__(self):
         self._x = 0
-        self._y = screen_height-1
+        self._y = screen_height
         self._lx = +30
         self._ly = -30
         self._avatar = canvas.create_line(self._x, self._y,
                                           self._x+self._lx,
-                                          self._y+self._ly)
+                                          self._y+self._ly, width = 3)
 
     def shoot(self):
         """
         :return возвращает объект снаряда (класса Ball)
         """
-        shell = Ball()
-        shell._x = self._x + self._lx
-        shell._y = self._y + self._ly
-        shell._Vx = self._lx/10
-        shell._Vy = self._ly/10
-        shell._R = 5
-        shell.fly()
+        shell = Ball(False)
+        shell._x = self._x + self._lx - shell._R
+        shell._y = self._y + self._ly - shell._R
+        shell.fly(False)
         return shell
 
 
@@ -81,7 +85,7 @@ def init_game():
     а также объект - пушку.
     """
     global balls, gun, shells_on_fly
-    balls = [Ball() for i in range(Ball.initial_number)]
+    balls = [Ball(True) for i in range(Ball.initial_number)]
     gun = Gun()
     shells_on_fly = []
 
@@ -101,9 +105,9 @@ def init_main_window():
 def timer_event():
     # все периодические рассчёты, которые я хочу, делаю здесь
     for ball in balls:
-        ball.fly()
+        ball.fly(True)
     for shell in shells_on_fly:
-        shell.fly()
+        shell.fly(False)
     canvas.after(timer_delay, timer_event)
 
 
@@ -111,6 +115,7 @@ def click_event_handler(event):
     global shells_on_fly
     shell = gun.shoot()
     shells_on_fly.append(shell)
+
 
 if __name__ == "__main__":
     init_main_window()
