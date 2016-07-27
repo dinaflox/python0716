@@ -59,16 +59,13 @@ class Field:
                 self.cell_set(y,x)
 
 
-    def change_cell(self,y,x):
+    def change_cell(self,y,x,key):
         """
-        изменение статуса клетки на обратное (жизнь на не_жизнь и наоборот)
+        изменение (установка) статуса клетки
         с одновременным изменением аватара на игровом поле
         :param y, x: координаты изменяемой клетки
         """
-        if self.matrix[y][x] == 0:
-            self.matrix[y][x] = 1
-        else:
-            self.matrix[y][x] = 0
+        self.matrix[y][x] = key
         canvas.delete(self.avatars[y][x])
         self.cell_set(y,x)
 
@@ -95,7 +92,7 @@ class Field:
         for y in range(1,self.cells_y_count-1):
             for x in range(1,self.cells_x_count-1):
                 if new_matrix[y][x] != self.matrix[y][x]:
-                    self.change_cell(y,x)
+                    self.change_cell(y,x,new_matrix[y][x])
                     count_changes += 1
         return count_changes
 
@@ -117,13 +114,23 @@ def new_field():
     label.update()
 
 
-def mouse_click(event):
+def mouse_click1(event):
     """
-    клик мышкой на игровом поле меняет статус клетки на противоположный.
+    клик первой клавишей мыши на игровом поле ставит статус клетки на "жизненный".
     *кликать можно и во время игры (сделано специально)
     """
     global field
-    field.change_cell(event.y // field.cell_size,event.x // field.cell_size)
+    if field.matrix[event.y // field.cell_size][event.x // field.cell_size] == 0:
+        field.change_cell(event.y // field.cell_size,event.x // field.cell_size,1)
+
+def mouse_click2(event):
+    """
+    клик первой клавишей мыши на игровом поле ставит статус клетки на "жизненный".
+    *кликать можно и во время игры (сделано специально)
+    """
+    global field
+    if field.matrix[event.y // field.cell_size][event.x // field.cell_size] == 1:
+        field.change_cell(event.y // field.cell_size,event.x // field.cell_size,0)
 
 
 def start_or_stop():
@@ -204,7 +211,10 @@ def init_window():
     root.resizable(False,False)
     canvas = Canvas(root, width = canvas_width, height = canvas_height)
     canvas.pack(side=LEFT)
-    canvas.bind('<Button-1>', mouse_click)
+    canvas.bind('<Button-1>', mouse_click1)
+    canvas.bind('<B1-Motion>', mouse_click1)
+    canvas.bind('<Button-3>', mouse_click2)
+    canvas.bind('<B3-Motion>', mouse_click2)
     scale = Scale(root, from_=4, to=20, orient=HORIZONTAL, length=80)
     scale.place(x = canvas_width+10,y = 10)
     scale.set(default_cell_size)
@@ -235,7 +245,11 @@ def time_event():
     if begin:
         if field.next_population() == 0:
             start_or_stop()
-            if not(1 in field.matrix):
+            c = 0
+            for y in range(0,field.cells_y_count):
+                for x in range(0,field.cells_x_count):
+                    c +=  field.matrix[y][x]
+            if not(c):
                 print('Все погибли...')
     canvas.after(time_sleep,time_event)
 
