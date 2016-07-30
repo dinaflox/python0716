@@ -27,6 +27,8 @@ class Field:
         """
         self.cells_x_count = canvas_width // self.cell_size
         self.cells_y_count = canvas_height // self.cell_size
+        self.real_x_width = self.cells_x_count * self.cell_size
+        self.real_y_height = self.cells_y_count * self.cell_size
         self.matrix = [[0] * self.cells_x_count for i in range(self.cells_y_count)]
         self.avatars = [[0] * self.cells_x_count for i in range(self.cells_y_count)]
 
@@ -113,24 +115,28 @@ def new_field():
     label['text']=''
     label.update()
 
+def mouses(event,z):
+    global field
+    if event.x < field.real_x_width and event.y < field.real_y_height:
+        if field.matrix[event.y // field.cell_size][event.x // field.cell_size] == abs(1-z):
+            field.change_cell(event.y // field.cell_size,event.x // field.cell_size,z)
+
+
 
 def mouse_click1(event):
     """
     клик первой клавишей мыши на игровом поле ставит статус клетки на "жизненный".
     *кликать можно и во время игры (сделано специально)
     """
-    global field
-    if field.matrix[event.y // field.cell_size][event.x // field.cell_size] == 0:
-        field.change_cell(event.y // field.cell_size,event.x // field.cell_size,1)
+    mouses(event,1)
+
 
 def mouse_click2(event):
     """
-    клик первой клавишей мыши на игровом поле ставит статус клетки на "жизненный".
+    клик третьей клавишей мыши на игровом поле ставит статус клетки на "мертвый".
     *кликать можно и во время игры (сделано специально)
     """
-    global field
-    if field.matrix[event.y // field.cell_size][event.x // field.cell_size] == 1:
-        field.change_cell(event.y // field.cell_size,event.x // field.cell_size,0)
+    mouses(event,0)
 
 
 def start_or_stop():
@@ -164,7 +170,7 @@ def save_to_file():
             f.close()
             print('Файл '+s+' успешно сохранён.')
     else:
-        print('Операция недоступна!')
+        print('Операция сохранения недоступна во время работы!')
 
 
 def load_of_file():
@@ -189,7 +195,7 @@ def load_of_file():
         except IOError:
             print('Ошибка: Не могу открыть файл с именем '+s)
     else:
-        print('Операция недоступна!')
+        print('Операция загрузки недоступна во время работы!')
 
 
 def init_window():
